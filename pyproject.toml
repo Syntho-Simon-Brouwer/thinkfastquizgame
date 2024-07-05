@@ -1,0 +1,63 @@
+[tool.poetry]
+name = "thinkfastquizgame"
+version = "0.1.0"
+description = "Think Fast Quiz Game"
+authors = ["Alireza Khosravian"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.111.0"
+uvicorn = {extras = ["standard"], version = "^0.30.1"}
+pydantic = "^2.7.4"
+pydantic-settings = "^2.3.3"
+pyjwt = "^2.8.0"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+alembic = "^1.13.1"
+sqlmodel = "^0.0.19"
+asyncpg = "^0.29.0"
+jinja2 = "^3.1.4"
+
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.4.10"
+mypy = "^1.10.0"
+pytest = "^8.2.2"
+coverage = "^7.5.3"
+types-passlib = "^1.7.7.20240327"
+pytest-asyncio = "^0.23.7"
+aiosqlite = "^0.20.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+strict = true
+exclude = ["alembic"]
+
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+]
+ignore = [
+    "B008",  # do not perform function calls in argument defaults
+    "W191",  # indentation contains tabs
+]
+
+[tool.ruff.lint.pyupgrade]
+# Preserve types, even if a file imports `from __future__ import annotations`.
+keep-runtime-typing = true

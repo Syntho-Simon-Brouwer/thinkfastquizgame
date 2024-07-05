@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title> 🧩</title>
+  </head>
+
+  <body style="padding: 20px; background-color: gray-light">
+    <h1>🧩 Think Fast Quiz Game 🧩</h1>
+    <p>Client_id 🖥 : <span style="border-color: black; border-style: solid; padding: 5px;">{{client_id}}</span></p>
+    <br>
+    <p id="question"> {{question}} </p>
+    <p> ( 😁 correct answer for the reviewers :  <span id="answerForReviewers" style="color: green">{{answer}}</span> ) </p>
+    <input type="hidden" id="questionId" value="{{question_id}}" />
+    <hr>
+    <div id="options">
+    {% for option in options %}
+      <input type="radio" id="{{option}}" name="{{option}}" value="{{option}}" onclick="submit(event)">
+      <label for="{{option}}">{{option}}</label>
+      <br>
+       {% endfor %}
+    </div>
+    <hr>
+    <h3>📩 Messages from Server</h3>
+    <ul id="results">
+    </ul>
+    <script>
+      var token = "{{token}}"
+      var ws = new WebSocket("ws://localhost:8000/ws?token=" + token);
+      ws.onmessage = function(event) {
+        var message = JSON.parse(event.data)
+
+        if (message["message_type"] == "new_question") {
+          updateQuestion(message["question"], message["answer"], message["options"], message["question_id"])
+        } else {
+          printMessage(message)
+          updateQuestion("⏳ waiting for the next question ... ", "", [], null)
+        }
+
+      };
+
+      function submit(event) {
+        console.log(444444, event)
+        var questionIdElement = document.getElementById('questionId');
+        ws.send(JSON.stringify({
+                      "message_type": "push_answer",
+                      "question_id": questionIdElement.value,
+                      "answer": event.target.value
+                  }));
+      }
+
+      function printMessage(data) {
+        var messages = {
+        "wrong_answer": "❌ Unfortunately Your Answer was Wrong!",
+        "correct_answer": "✅ Great! you scored a point!",
+        "too_late": "⏰ Ah.. too late buddy, let's try the next one!"
+        }
+        var results = document.getElementById('results');
+        var resultItem = document.createElement('li');
+        var content = document.createTextNode(messages[data["message_type"]]);
+        resultItem.appendChild(content);
+        results.appendChild(resultItem);
+      }
+
+      function updateQuestion(question, answer, options, questionId) {
+        var questionElement = document.getElementById('question');
+        questionElement.innerHTML = question
+
+        var answerForReviewersElement = document.getElementById('answerForReviewers');
+        answerForReviewersElement.innerHTML = answer
+
+        var optionsContainer = document.getElementById('options');
+        optionsContainer.innerHTML = ""
+
+        for (var i = 0; i< options.length; i++){
+            var opt = document.createElement('input');
+            opt.value = options[i];
+            opt.id = options[i]
+            opt.type = "radio"
+            opt.innerHTML = options[i];
+            opt.onclick = submit
+
+            var label = document.createElement('label');
+            label.for = options[i]
+            label.innerHTML = options[i]
+
+            optionsContainer.appendChild(opt);
+            optionsContainer.appendChild(label);
+            optionsContainer.appendChild(document.createElement('br'));
+
+        }
+
+
+        var questionIdElement = document.getElementById('questionId');
+        questionIdElement.value = questionId;
+      }
+
+    </script>
+  </body>
+
+</html>
