@@ -37,4 +37,4 @@ jobs:
       - run: poetry install --no-interaction
       - run: poetry run ruff check .
       - run: poetry run mypy .
-      - run: poetry run pytest
+      - run: poetry run pytest tests -v -s --asyncio-mode=auto
