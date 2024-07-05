@@ -4,7 +4,7 @@
 ### Functional Requirements
 
 - Clients should be able to join the current quiz game
-- The user client answers the fastest among concurrent requests will get the score\
+- The user client answers the fastest among concurrent requests will get the score
 - Once a user gives the correct answer, other clients should be informed the question is gone
 - Once a question is answered, next question from the lists should be provided in order
 - If game is running out of questions it should cycle back to the starting point
@@ -52,7 +52,7 @@ multiple services
   GET /game/points
 ```
 
-#### Check all online users
+#### Check all online players
 
 ```http
   GET /game/online-players
@@ -92,7 +92,7 @@ Tear down the containers (Optional)
 - **`Domain-Driven-Design`**: One of the non-functional requirements of the project is scalability, which led me to use Domain-Driven Design for the backend file structure. It makes the project loosely coupled and will be easier to divide into different services.
 
 - **`AsyncIO`** : Since the code is mostly IO-bound and not CPU-bound, using async programming helps the code be faster and more responsive.
-- 
+
 - **`Web Sockets`** : Since the users should be kept updated, websockets was used
 
 - **`Sqlmodel`** : Helps code reusability, supported by fastapi, on top of SQLAlchemy, supports async programming, validation with pydantic

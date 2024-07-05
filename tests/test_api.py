@@ -22,14 +22,31 @@ def test_home_page(test_client: TestClient) -> None:
         assert option in res.text
 
 
-@patch("app._security.uuid1", Mock(return_value="fake_client_id"))
-def test_online_players(test_client: TestClient) -> None:
-    res = test_client.get("/")
-    assert "fake_client_id" in res.text
-    assert str(sample_questions[0]["question_id"]) in res.text
-    assert str(sample_questions[0]["question"]) in res.text
-    for option in sample_questions[0]["options"]:
-        assert option in res.text
+def test_online_players(test_client: TestClient, test_token1: tuple[str, str]) -> None:
+    # getting a user online
+    with test_client.websocket_connect(f"/ws?token={test_token1[0]}"):
+        # retrieving online users
+        result = test_client.get("/game/online-players")
+
+        assert result.status_code == 200
+        assert result.json() == [test_token1[1]]
+
+
+@pytest.mark.asyncio
+async def test_player_scores(test_client: TestClient, test_token1: tuple[str, str]) -> None:
+    session: AsyncSession
+    # save a point from another user in database
+    async with get_session() as session:
+        session.add(
+            PlayerPoint(
+                client_id=test_token1[1], question_id=sample_questions[0]["question_id"], game_round_id="round_1"
+            )
+        )
+        await session.commit()
+
+        result = test_client.get("/game/points")
+        assert result.status_code == 200
+        assert result.json() == [{"question_id": "Q0001", "client_id": test_token1[1], "game_round_id": "round_1"}]
 
 
 @pytest.mark.asyncio
@@ -97,7 +114,6 @@ async def test_ws__uniqueness_of_correct_answer_per_round(
 ) -> None:
     with test_client.websocket_connect(f"/ws?token={test_token1[0]}") as websocket:
         session: AsyncSession
-
         # save a point from another user in database
         async with get_session() as session:
             session.add(
