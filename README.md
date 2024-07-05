@@ -63,7 +63,7 @@ multiple services
 Clone the project
 
 ```bash
-  git clone git@github.com:alirezakhosraviyan/thinkfastquizgame.git
+  git clone https://github.com/alirezakhosraviyan/thinkfastquizgame.git
 ```
 
 Go to the project directory
